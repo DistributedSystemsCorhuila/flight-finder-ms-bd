@@ -1,0 +1,42 @@
+package com.flight_finder_ms_db.controller;
+
+import com.flight_finder_ms_db.dto.UserDTO;
+import com.flight_finder_ms_db.dto.UserRegistration;
+import com.flight_finder_ms_db.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/api/users")
+@Tag(name = "Users", description = "API para gestión de usuarios")
+public class UsersController {
+
+    @Autowired
+    private UserService userService;
+
+    @Operation(summary = "Registrar usuario", description = "Registra un nuevo usuario en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente",
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))),
+            @ApiResponse(responseCode = "409", description = "El username o email ya está en uso",
+                    content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistration userRegistration) {
+        try {
+            UserDTO newUserDTO = userService.registerUser(userRegistration);
+            return ResponseEntity.ok(newUserDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
+    }
+
+}
