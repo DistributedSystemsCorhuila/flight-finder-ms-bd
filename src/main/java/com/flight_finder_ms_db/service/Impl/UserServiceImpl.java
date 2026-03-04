@@ -1,5 +1,7 @@
 package com.flight_finder_ms_db.service.Impl;
 
+import com.flight_finder_ms_db.dto.LoginRequest;
+import com.flight_finder_ms_db.dto.LoginResponse;
 import com.flight_finder_ms_db.dto.UserDTO;
 import com.flight_finder_ms_db.dto.UserRegistration;
 import com.flight_finder_ms_db.entity.User;
@@ -32,6 +34,23 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toDTO(savedUser);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        // Validación básica de contraseña (en texto plano por ahora)
+        // TODO: Cuando se implemente JWT, usar BCrypt para comparar contraseñas encriptadas
+        if (!user.getPassword().equals(loginRequest.getPassword())) {
+            throw new IllegalArgumentException("Contraseña incorrecta.");
+        }
+
+        UserDTO userDTO = userMapper.toDTO(user);
+
+        // Por ahora retorna null en el token, se implementará con JWT después
+        return new LoginResponse("Login exitoso", userDTO);
     }
 }
 

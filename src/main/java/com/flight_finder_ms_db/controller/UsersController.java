@@ -1,5 +1,7 @@
 package com.flight_finder_ms_db.controller;
 
+import com.flight_finder_ms_db.dto.LoginRequest;
+import com.flight_finder_ms_db.dto.LoginResponse;
 import com.flight_finder_ms_db.dto.UserDTO;
 import com.flight_finder_ms_db.dto.UserRegistration;
 import com.flight_finder_ms_db.service.UserService;
@@ -36,6 +38,23 @@ public class UsersController {
             return ResponseEntity.ok(newUserDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(409).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Login de usuario", description = "Autenticación básica de usuario (JWT se implementará después)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login exitoso",
+                    content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas",
+                    content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            LoginResponse loginResponse = userService.login(loginRequest);
+            return ResponseEntity.ok(loginResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
