@@ -27,5 +27,8 @@ public class UserRegistration {
 
     @Schema(description = "Contraseña del usuario", example = "password123")
     private String password;
+
+    @Schema(description = "Destinos favoritos", example = "Italia")
+    private String favoriteDestinations;
 }
 

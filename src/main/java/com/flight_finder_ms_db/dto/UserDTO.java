@@ -24,5 +24,8 @@ public class UserDTO {
 
     @Schema(description = "Nombre de usuario", example = "john_doe")
     private String username;
+
+    @Schema(description = "Destinos favoritos", example = "Italia")
+    private String favoriteDestinations;
 }
 

@@ -16,7 +16,8 @@ public class UserMapper {
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getUsername()
+                user.getUsername(),
+                user.getFavoriteDestinations()
         );
     }
 
@@ -30,6 +31,7 @@ public class UserMapper {
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
+        user.setFavoriteDestinations(dto.getFavoriteDestinations());
         return user;
     }
 }
