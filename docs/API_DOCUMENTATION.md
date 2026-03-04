@@ -29,7 +29,8 @@ Registra un nuevo usuario en el sistema.
   "lastName": "string",
   "username": "string",
   "email": "string",
-  "password": "string"
+  "password": "string",
+  "favoriteDestinations":"Italy"
 }
 ```
 
@@ -62,6 +63,7 @@ o
 | username | String | Nombre de usuario único |
 | email | String | Correo electrónico único |
 | password | String | Contraseña del usuario |
+| favoriteDestinations | String | Destinos favoritos del usuario (opcional) |
 
 ### UserDTO
 | Campo | Tipo | Descripción |
