@@ -5,17 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity
-@Table(name = "flights")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "flights")
 public class Flight {
 
     @Id
@@ -29,17 +30,26 @@ public class Flight {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(nullable = false, length = 5)
     private String currency;
 
     private String tripType;
 
     private Integer carbonEmission;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String bookingToken;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @OneToMany(
+            mappedBy = "flight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<FlightSegment> segments;
 
+    @OneToMany(
+            mappedBy = "flight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Layover> layovers;
 }
