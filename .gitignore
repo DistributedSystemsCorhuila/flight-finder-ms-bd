@@ -37,4 +37,16 @@ mvnw
 mvnw.cmd
 .mvn/
 
+### Environment Files ###
+# Ignore all .env files except .env.example
+.env
+.env.dev
+.env.qa
+.env.prod
+.env.main
+!.env.example
+
+### Docker ###
+docker-compose.override.yml
+
 
