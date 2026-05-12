@@ -1,24 +1,23 @@
-package com.flight_finder_ms_db.service.Impl;
+package com.flight_finder_ms_db.service.impl;
 
 import com.flight_finder_ms_db.dto.FlightDTO;
 import com.flight_finder_ms_db.entity.Flight;
 import com.flight_finder_ms_db.mapper.FlightMapper;
 import com.flight_finder_ms_db.repository.FlightRepository;
 import com.flight_finder_ms_db.service.FlightService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
 
-    @Autowired
-    private FlightRepository flightRepository;
+    private final FlightRepository flightRepository;
 
-    @Autowired
-    private FlightMapper flightMapper;
+    private final FlightMapper flightMapper;
 
     @Override
     @Transactional(readOnly = true)
