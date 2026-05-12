@@ -1,4 +1,4 @@
-package com.flight_finder_ms_db.service.Impl;
+package com.flight_finder_ms_db.service.impl;
 
 import com.flight_finder_ms_db.dto.LoginRequest;
 import com.flight_finder_ms_db.dto.LoginResponse;
@@ -8,17 +8,16 @@ import com.flight_finder_ms_db.entity.User;
 import com.flight_finder_ms_db.mapper.UserMapper;
 import com.flight_finder_ms_db.repository.UserRepository;
 import com.flight_finder_ms_db.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Override
     public UserDTO registerUser(UserRegistration userRegistration) {

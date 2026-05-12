@@ -1,4 +1,4 @@
-package com.flight_finder_ms_db.service.Impl;
+package impl;
 
 import com.flight_finder_ms_db.dto.LoginRequest;
 import com.flight_finder_ms_db.dto.LoginResponse;
@@ -7,6 +7,7 @@ import com.flight_finder_ms_db.dto.UserRegistration;
 import com.flight_finder_ms_db.entity.User;
 import com.flight_finder_ms_db.mapper.UserMapper;
 import com.flight_finder_ms_db.repository.UserRepository;
+import com.flight_finder_ms_db.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
