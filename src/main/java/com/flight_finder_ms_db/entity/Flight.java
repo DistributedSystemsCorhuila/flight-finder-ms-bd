@@ -8,7 +8,8 @@ import lombok.Setter;
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,12 +45,14 @@ public class Flight {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<FlightSegment> segments;
+    @Builder.Default
+    private Set<FlightSegment> segments = new HashSet<>();
 
     @OneToMany(
             mappedBy = "flight",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Layover> layovers;
+    @Builder.Default
+    private Set<Layover> layovers = new HashSet<>();
 }

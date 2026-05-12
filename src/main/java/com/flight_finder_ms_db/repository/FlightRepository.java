@@ -13,6 +13,8 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
     @Query("""
     SELECT DISTINCT f
     FROM Flight f
+    JOIN FETCH f.segments
+    LEFT JOIN FETCH f.layovers
     JOIN f.segments firstSegment
     JOIN f.segments lastSegment
     WHERE firstSegment.segmentOrder = 1
