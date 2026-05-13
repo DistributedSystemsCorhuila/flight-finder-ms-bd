@@ -1,6 +1,9 @@
 package com.flight_finder_ms_db.controller;
 
 import com.flight_finder_ms_db.dto.FlightDTO;
+import com.flight_finder_ms_db.dto.FlightSearchRequest;
+import com.flight_finder_ms_db.dto.RouteCountDTO;
+import com.flight_finder_ms_db.service.FlightSearchHistoryService;
 import com.flight_finder_ms_db.service.FlightService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,12 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin
@@ -26,26 +26,38 @@ import java.util.List;
 public class FlightsController {
 
     private final FlightService flightService;
+    private final FlightSearchHistoryService historyService;
 
-    @Operation(
-            summary = "Buscar vuelos",
-            description = "Lista vuelos cuyo primer tramo sale del aeropuerto de origen y algún tramo llega al destino, ordenados por precio."
-    )
+    @Operation(summary = "Buscar vuelos", description = "Busca vuelos via API externa y guarda historial.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de vuelos (puede estar vacía)",
+            @ApiResponse(responseCode = "200", description = "Lista de vuelos",
                     content = @Content(schema = @Schema(implementation = FlightDTO.class))),
             @ApiResponse(responseCode = "400", description = "Parámetros inválidos",
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/search")
     public ResponseEntity<?> searchFlights(
-            @RequestParam("from") String departureAirportCode,
-            @RequestParam("to") String arrivalAirportCode) {
+            @RequestParam("userId") Long userId,
+            @RequestParam("origin") String origin,
+            @RequestParam("destination") String destination,
+            @RequestParam("departureDate") LocalDate departureDate,
+            @RequestParam(value = "returnDate", required = false) LocalDate returnDate,
+            @RequestParam("adults") Integer adults,
+            @RequestParam(value = "cabinClass", required = false) String cabinClass) {
+
+        FlightSearchRequest request = new FlightSearchRequest(origin, destination, departureDate, returnDate, adults, cabinClass);
         try {
-            List<FlightDTO> flights = flightService.searchFlights(departureAirportCode, arrivalAirportCode);
+            List<FlightDTO> flights = flightService.searchFlights(userId, request);
             return ResponseEntity.ok(flights);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @Operation(summary = "Obtener rutas más buscadas por usuario")
+    @GetMapping("/history/top/{userId}")
+    public ResponseEntity<List<RouteCountDTO>> getTopRoutes(@PathVariable Long userId) {
+        List<RouteCountDTO> routes = historyService.getTopRoutesByUserId(userId);
+        return ResponseEntity.ok(routes);
     }
 }
