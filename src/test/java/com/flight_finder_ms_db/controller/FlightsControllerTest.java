@@ -1,6 +1,9 @@
 package com.flight_finder_ms_db.controller;
 
 import com.flight_finder_ms_db.dto.FlightDTO;
+import com.flight_finder_ms_db.dto.FlightSearchRequest;
+import com.flight_finder_ms_db.dto.RouteCountDTO;
+import com.flight_finder_ms_db.service.FlightSearchHistoryService;
 import com.flight_finder_ms_db.service.FlightService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,10 +32,14 @@ class FlightsControllerTest {
     @Mock
     private FlightService flightService;
 
+    @Mock
+    private FlightSearchHistoryService historyService;
+
     @InjectMocks
     private FlightsController flightsController;
 
     private FlightDTO sampleFlight;
+    private FlightSearchRequest sampleRequest;
 
     @BeforeEach
     void setUp() {
@@ -41,13 +49,24 @@ class FlightsControllerTest {
         sampleFlight.setCurrency("EUR");
         sampleFlight.setSegments(Collections.emptyList());
         sampleFlight.setLayovers(Collections.emptyList());
+
+        sampleRequest = new FlightSearchRequest("MAD", "BCN", LocalDate.now().plusDays(1), null, 1, "ECONOMY");
     }
 
     @Test
     void searchFlightsSuccess() {
-        when(flightService.searchFlights("MAD", "BCN")).thenReturn(List.of(sampleFlight));
+        Long userId = 1L;
+        when(flightService.searchFlights(userId, sampleRequest)).thenReturn(List.of(sampleFlight));
 
-        ResponseEntity<?> result = flightsController.searchFlights("MAD", "BCN");
+        ResponseEntity<?> result = flightsController.searchFlights(
+                userId,
+                sampleRequest.getOrigin(),
+                sampleRequest.getDestination(),
+                sampleRequest.getDepartureDate(),
+                sampleRequest.getReturnDate(),
+                sampleRequest.getAdults(),
+                sampleRequest.getCabinClass()
+        );
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -56,18 +75,49 @@ class FlightsControllerTest {
         List<FlightDTO> body = (List<FlightDTO>) result.getBody();
         assertEquals(1, body.size());
         assertEquals(1L, body.get(0).getId());
-        verify(flightService, times(1)).searchFlights("MAD", "BCN");
+        verify(flightService, times(1)).searchFlights(userId, sampleRequest);
     }
 
     @Test
     void searchFlightsBadRequest() {
-        when(flightService.searchFlights("", "BCN"))
+        Long userId = 1L;
+        FlightSearchRequest invalidRequest = new FlightSearchRequest("", "BCN", LocalDate.now().plusDays(1), null, 1, "ECONOMY");
+
+        when(flightService.searchFlights(userId, invalidRequest))
                 .thenThrow(new IllegalArgumentException("El código IATA del aeropuerto de origen es obligatorio."));
 
-        ResponseEntity<?> result = flightsController.searchFlights("", "BCN");
+        ResponseEntity<?> result = flightsController.searchFlights(
+                userId,
+                invalidRequest.getOrigin(),
+                invalidRequest.getDestination(),
+                invalidRequest.getDepartureDate(),
+                invalidRequest.getReturnDate(),
+                invalidRequest.getAdults(),
+                invalidRequest.getCabinClass()
+        );
 
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertEquals("El código IATA del aeropuerto de origen es obligatorio.", result.getBody());
-        verify(flightService, times(1)).searchFlights("", "BCN");
+        verify(flightService, times(1)).searchFlights(userId, invalidRequest);
+    }
+
+    @Test
+    void getTopRoutesSuccess() {
+        Long userId = 1L;
+        List<RouteCountDTO> expectedRoutes = List.of(
+                new RouteCountDTO("MAD-BCN", 5L),
+                new RouteCountDTO("MAD-JFK", 3L)
+        );
+
+        when(historyService.getTopRoutesByUserId(userId)).thenReturn(expectedRoutes);
+
+        ResponseEntity<List<RouteCountDTO>> result = flightsController.getTopRoutes(userId);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(2, result.getBody().size());
+        assertEquals("MAD-BCN", result.getBody().get(0).getRoute());
+        assertEquals(5L, result.getBody().get(0).getCount());
+        verify(historyService, times(1)).getTopRoutesByUserId(userId);
     }
 }
