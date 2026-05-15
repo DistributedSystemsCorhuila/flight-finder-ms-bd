@@ -1,5 +1,6 @@
 package com.flight_finder_ms_db.dto;
 
+import com.flight_finder_ms_db.enums.FavoriteDestination;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class UserRegistration {
     @Schema(description = "Contraseña del usuario", example = "password123")
     private String password;
 
-    @Schema(description = "Destinos favoritos", example = "Italia")
-    private String favoriteDestinations;
+    @Schema(description = "Destino favorito", example = "PARIS")
+    private FavoriteDestination favoriteDestinations;
 }
 

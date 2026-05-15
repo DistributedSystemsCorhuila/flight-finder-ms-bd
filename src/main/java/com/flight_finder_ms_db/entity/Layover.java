@@ -14,7 +14,7 @@ import lombok.Builder;
 @AllArgsConstructor
 @Entity
 @Table(name = "layovers")
-public class Layover {
+public class Layover extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

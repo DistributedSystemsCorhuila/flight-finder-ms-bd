@@ -1,5 +1,6 @@
 package com.flight_finder_ms_db.entity;
 
+import com.flight_finder_ms_db.enums.FavoriteDestination;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +35,7 @@ public class User {
     private String password;
 
     @Column
-    private String favoriteDestinations;
+    @Enumerated(EnumType.STRING)
+    private FavoriteDestination favoriteDestinations;
 }
 

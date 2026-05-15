@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "flight_segments")
-public class FlightSegment {
+public class FlightSegment extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
